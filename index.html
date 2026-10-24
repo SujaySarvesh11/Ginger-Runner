@@ -2,18 +2,158 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Ginger-Runner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0618">
+  <title>Ginger Dash</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="wrap">
-    <canvas id="game"></canvas>
-    <div id="overlay" class="screen">
-      <h1>Ginger-Runner</h1>
-      <p>Coming soon…</p>
+  <main class="cabinet" id="cabinet">
+    <header class="marquee">
+      <span class="marquee-title">GINGER DASH</span>
+    </header>
+
+    <div class="hud" id="hud">
+      <div class="hud-block">
+        <span class="hud-label">LIVES</span>
+        <div class="hearts" id="hud-hearts"></div>
+      </div>
+      <div class="hud-block">
+        <span class="hud-label">SCORE</span>
+        <span class="hud-value" id="hud-score">0</span>
+      </div>
+      <div class="hud-block">
+        <span class="hud-label">BEST</span>
+        <span class="hud-value hud-best" id="hud-best">0</span>
+      </div>
+      <div class="hud-block combo" id="hud-combo">
+        <span class="hud-label">COMBO</span>
+        <span class="hud-value combo-mult" id="hud-mult">x1</span>
+        <div class="combo-bar"><div class="combo-fill" id="hud-combo-fill"></div></div>
+      </div>
+      <div class="hud-powers" id="hud-powers"></div>
+      <div class="hud-buttons">
+        <button class="icon-btn" data-action="mute" id="btn-mute" aria-label="Toggle sound">🔊</button>
+        <button class="icon-btn" data-action="pause" aria-label="Pause">⏸</button>
+      </div>
     </div>
-  </div>
+
+    <div class="play">
+      <div class="screen-frame">
+        <canvas id="game" width="720" height="200"></canvas>
+        <div class="scanlines" aria-hidden="true"></div>
+      </div>
+      <div class="pad pad-move">
+        <button class="tbtn" data-key="left" aria-label="Move left">◀</button>
+        <button class="tbtn" data-key="right" aria-label="Move right">▶</button>
+      </div>
+      <div class="pad pad-act">
+        <button class="tbtn tbtn-small" data-key="pause" aria-label="Pause">PAUSE</button>
+        <button class="tbtn tbtn-jump" data-key="jump" aria-label="Jump">JUMP</button>
+      </div>
+    </div>
+
+    <footer class="hints">
+      <span><kbd>←</kbd><kbd>→</kbd>/<kbd>A</kbd><kbd>D</kbd> MOVE</span>
+      <span><kbd>SPACE</kbd>/<kbd>↑</kbd> JUMP ×2</span>
+      <span><kbd>↓</kbd> FAST FALL</span>
+      <span><kbd>P</kbd> PAUSE</span>
+      <span><kbd>C</kbd> SKINS</span>
+      <span><kbd>E</kbd> GEAR</span>
+      <span><kbd>M</kbd> MUTE</span>
+    </footer>
+  </main>
+
+  <!-- Start screen -->
+  <section class="overlay overlay-start show" id="screen-start">
+    <div class="panel panel-start">
+      <div class="logo">
+        <span class="logo-top">GINGER</span>
+        <span class="logo-bot">DASH</span>
+      </div>
+      <p class="tagline">AN 8-BIT CAT RUNNER</p>
+
+      <div class="section-label">SELECT DIFFICULTY</div>
+      <div class="diff-grid" id="diff-grid"></div>
+
+      <div class="row">
+        <button class="btn btn-alt" data-action="skins">SKINS <kbd>C</kbd></button>
+        <button class="btn btn-alt" data-action="gear">GEAR <kbd>E</kbd></button>
+      </div>
+      <div class="start-meta" id="start-meta"></div>
+
+      <button class="btn btn-primary btn-start" data-action="start">▶ START</button>
+      <p class="blink press-hint">PRESS SPACE OR ENTER</p>
+
+      <div class="section-label">HIGH SCORES</div>
+      <div class="score-table" id="score-table"></div>
+    </div>
+  </section>
+
+  <!-- Pause screen -->
+  <section class="overlay" id="screen-pause">
+    <div class="panel panel-sm">
+      <h2 class="panel-title">PAUSED</h2>
+      <button class="btn btn-primary" data-action="resume">RESUME</button>
+      <button class="btn" data-action="start">RESTART</button>
+      <button class="btn" data-action="menu">MAIN MENU</button>
+      <div class="row">
+        <button class="btn btn-alt btn-small" data-action="skins">SKINS</button>
+        <button class="btn btn-alt btn-small" data-action="gear">GEAR</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game over screen -->
+  <section class="overlay" id="screen-over">
+    <div class="panel">
+      <div class="record-banner" id="over-record">★ NEW RECORD ★</div>
+      <h2 class="panel-title title-over">GAME OVER</h2>
+      <div class="final">
+        <div><span class="hud-label">SCORE</span><b id="over-score">0</b></div>
+        <div><span class="hud-label">BEST</span><b id="over-best">0</b></div>
+      </div>
+      <div class="over-diff" id="over-diff"></div>
+      <div class="stats" id="over-stats"></div>
+      <div class="row">
+        <button class="btn btn-primary" data-action="start">↻ RETRY</button>
+        <button class="btn" data-action="menu">MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skin selector -->
+  <section class="overlay modal" id="modal-skins">
+    <div class="panel panel-wide">
+      <div class="modal-head">
+        <h2 class="panel-title">CAT SKINS</h2>
+        <button class="icon-btn" data-action="closeModal" aria-label="Close">✕</button>
+      </div>
+      <div class="skin-grid" id="skin-grid"></div>
+    </div>
+  </section>
+
+  <!-- Equipment armory -->
+  <section class="overlay modal" id="modal-gear">
+    <div class="panel panel-wide">
+      <div class="modal-head">
+        <h2 class="panel-title">ARMORY</h2>
+        <button class="icon-btn" data-action="closeModal" aria-label="Close">✕</button>
+      </div>
+      <div class="loadout" id="loadout"></div>
+      <p class="note">Loadout changes take effect at the start of each run.</p>
+      <div class="tabs" id="gear-tabs"></div>
+      <div class="item-grid" id="item-grid"></div>
+    </div>
+  </section>
+
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>
